@@ -23,7 +23,7 @@ public class Payment {
     @JoinColumn(name = "rental_id",nullable = false)
 @ManyToOne
     private Rental rental;
-    @Column(nullable = false)
+    @Column(nullable = false,precision = 5,scale = 2)
     private BigDecimal amount;
     @Column(name = "payment_date",nullable = false)
     private LocalDateTime paymentDate;
