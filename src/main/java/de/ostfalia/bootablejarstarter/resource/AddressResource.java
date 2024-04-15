@@ -4,4 +4,5 @@ import jakarta.ws.rs.Path;
 
 @Path("/addresses")
 public class AddressResource {
+
 }
