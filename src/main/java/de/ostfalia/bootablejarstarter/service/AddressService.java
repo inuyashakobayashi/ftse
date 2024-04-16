@@ -63,4 +63,14 @@ public class AddressService {
 
         return simplifiedAddresses;
     }
+    public int getPageNumber(){
+        TypedQuery<Long> query = em.createQuery("select count (a) from Address a", Long.class);
+        long totalRecords = query.getSingleResult();
+
+        // 计算总页数，向上取整
+        int totalPages = (int) Math.ceil(totalRecords / (double) PAGE_SIZE);
+        return totalPages;
+
+    }
+
 }
