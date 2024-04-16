@@ -1,0 +1,11 @@
+
+
+
+#Adds a datasource with overloadable parameters using system environment variables
+data-source add \
+  --name=roka/main \
+  --jndi-name=java:jboss/datasources/dvdrentalcustomer \
+  --driver-name=postgresql \
+  --connection-url=${env.JDBC_URL:jdbc:postgresql://localhost:5432/postgres} \
+  --user-name=${env.JDBC_USERNAME:postgres} \
+  --password=${env.JDBC_PASSWORD:postgres}

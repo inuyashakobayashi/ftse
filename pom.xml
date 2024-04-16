@@ -42,6 +42,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.3</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -52,6 +58,14 @@
                 <artifactId>wildfly-jar-maven-plugin</artifactId>
                 <version>${wildfly-jar-maven-plugin.version}</version>
                 <configuration>
+                    <cli-sessions>
+                        <cli-session>
+                            <script-files>
+                                <script>src/main/scripts/ds-conf.cli</script>
+                            </script-files>
+                            <resolve-expressions>true</resolve-expressions>
+                        </cli-session>
+                    </cli-sessions>
                     <feature-packs>
                         <feature-pack>
                             <location>wildfly@maven(org.jboss.universe:community-universe)#${wildfly.version}</location>
@@ -68,6 +82,9 @@
                         <layer>jaxrs</layer>
                         <layer>bean-validation</layer>
                         <layer>management</layer>
+                        <layer>postgresql-datasource</layer>
+                        <layer>postgresql-driver</layer>
+                        <layer>jsf</layer>
                     </layers>
                     <excluded-layers>
                         <layer>deployment-scanner</layer>
@@ -88,5 +105,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
