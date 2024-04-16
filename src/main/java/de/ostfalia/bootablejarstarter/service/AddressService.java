@@ -1,13 +1,17 @@
 package de.ostfalia.bootablejarstarter.service;
 
 import de.ostfalia.bootablejarstarter.entity.Address;
+import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Stateless
 public class AddressService {
@@ -34,12 +38,29 @@ public class AddressService {
         TypedQuery<Address> query = em.createQuery("SELECT a from Address a", Address.class);
         return query.getResultList();
     }
-public List<Address> getAddressListWithPage(Integer page){
+    public List<Map<String,Object>> getAddressListWithPage(Integer page){
 
-    TypedQuery<Address> query = em.createQuery("SELECT a from Address a", Address.class);
-    query.setFirstResult((page-1)*PAGE_SIZE);
-    query.setMaxResults(PAGE_SIZE);
-    return query.getResultList();
-}
+        TypedQuery<Address> query = em.createQuery("SELECT a from Address a", Address.class);
+        query.setFirstResult((page-1)*PAGE_SIZE);
+        query.setMaxResults(PAGE_SIZE);
+//    return query.getResultList();
+        List<Address> results = query.getResultList();
+        List<Map<String, Object>> simplifiedAddresses = new ArrayList<>();
+        for (Address address : results) {
+            Map<String, Object> addressMap = new HashMap<>();
+            addressMap.put("address", address.getAddress());
+            addressMap.put("city", address.getCity().getCity());
+            addressMap.put("country", address.getCity().getCountry().getCountry());
+            addressMap.put("district", address.getDistrict());
+            addressMap.put("id", address.getAddressId());
+            addressMap.put("phone", address.getPhone());
+            addressMap.put("postalCode", address.getPostalCode());
+            simplifiedAddresses.add(addressMap);
 
+
+
+        }
+
+        return simplifiedAddresses;
+    }
 }
