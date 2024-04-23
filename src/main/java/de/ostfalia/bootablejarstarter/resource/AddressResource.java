@@ -77,7 +77,7 @@ public class AddressResource {
                 .entity(address) // 返回创建的地址对象
                 .build();
     }
-@GET
+@GET//TODO es ist fast fertig aber noch date bei ResponseHeader nicht geloescht
 @Path("/{id}")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -87,5 +87,13 @@ return Response.ok().entity(addressService.getAddressDataById(id)).links(self).b
 }
 
 
+@GET//TODO auch date bei header
+    @Path("/count")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces({MediaType.APPLICATION_JSON})
+    public Long getCountOfAddress(){
+        return addressService.getCountOfAddress();
+
+}
 
 }

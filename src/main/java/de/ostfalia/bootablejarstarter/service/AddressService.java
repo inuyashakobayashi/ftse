@@ -112,5 +112,12 @@ public List<Map<String,Object>> getAddressDataById(Integer id) {
         return totalPages;
 
     }
+    public Long getCountOfAddress(){
+
+        TypedQuery<Long> query= em.createQuery("select count (a) from Address a",Long.class);
+         long count =query.getSingleResult();
+         return count;
+    }
+
 
 }
