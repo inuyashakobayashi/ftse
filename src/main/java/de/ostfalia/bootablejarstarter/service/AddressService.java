@@ -5,10 +5,12 @@ import de.ostfalia.bootablejarstarter.entity.City;
 import de.ostfalia.bootablejarstarter.entity.Country;
 import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import jakarta.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +21,7 @@ import java.util.Map;
 public class AddressService {
     @PersistenceContext(unitName = "customer")
     EntityManager em;
+    @Inject CustomerService customerService;
 
     private static final int PAGE_SIZE = 10;
     public void save(Address address){
@@ -54,6 +57,9 @@ public Country findCountryById(Integer id){
 }
 public List<Map<String,Object>> getAddressDataById(Integer id) {
     Address address = em.find(Address.class, id);
+//    if (address ==null){
+//        return Response.status(404).build();
+//    }
     List<Map<String, Object>> addressData = new ArrayList<>();
 
         Map<String, Object> addressMap = new HashMap<>();
@@ -117,6 +123,23 @@ public List<Map<String,Object>> getAddressDataById(Integer id) {
         TypedQuery<Long> query= em.createQuery("select count (a) from Address a",Long.class);
          long count =query.getSingleResult();
          return count;
+    }
+
+    public Response deleteAddressById(Integer id){
+        Address address = em.find(Address.class,id);
+        if (address == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        //TODO: dann loeschen
+        Query query = em.createQuery("SELECT COUNT(c) FROM Customer c WHERE c.address = :address");
+        query.setParameter("address", address);
+        Long count = (Long) query.getSingleResult();
+        if (count > 0) {
+            return Response.status(403).build();
+        }
+        this.delete(address);
+        return Response.noContent().entity("Address deleted").build();
+
     }
 
 

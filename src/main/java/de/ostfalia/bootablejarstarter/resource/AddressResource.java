@@ -3,6 +3,8 @@ package de.ostfalia.bootablejarstarter.resource;
 import de.ostfalia.bootablejarstarter.entity.Address;
 import de.ostfalia.bootablejarstarter.service.AddressService;
 import jakarta.inject.Inject;
+import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Min;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Link;
@@ -82,6 +84,10 @@ public class AddressResource {
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
     public Response getAddressById(@PathParam("id") Integer id){
+        Address address = addressService.findeAddressById(id);
+        if (address ==null){
+        return Response.status(404).build();
+    }
         Link self = Link.fromUriBuilder(uriInfo.getAbsolutePathBuilder()).rel("self").type("GET").build();
 return Response.ok().entity(addressService.getAddressDataById(id)).links(self).build();
 }
@@ -95,5 +101,16 @@ return Response.ok().entity(addressService.getAddressDataById(id)).links(self).b
         return addressService.getCountOfAddress();
 
 }
+
+@DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+@Path("/{id}")
+@Transactional
+public Response deleteAddressById(@PathParam("id") Integer id){
+        //TODO :prufen ob relationship with customer
+return addressService.deleteAddressById(id);
+}
+
 
 }
