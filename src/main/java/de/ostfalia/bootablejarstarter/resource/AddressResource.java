@@ -18,6 +18,7 @@ import java.util.Objects;
 public class AddressResource {
     @Inject
     AddressService addressService;
+
     @Context
     private UriInfo uriInfo;
     @GET
@@ -54,11 +55,37 @@ public class AddressResource {
                 .type("GET")
                 .build();
 
-        // 创建响应
+
         return Response.ok(addresses)
                 .links(firstPage, prevPage,nextPage, lastPage)
                 .build();
     }
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createAddress(Address address){
+        if(addressService.findCityById(address.getCity().getCityId()) == null || addressService.findCountryById(address.getCity().getCountry().getCountryId()) == null){
+            return Response.status(Response.Status.NOT_FOUND)
+                       .entity("{\"error\": \"Country and/or City do not exist.\"}")
+                       .build();
+        }
+
+        addressService.save(address);
+        // 构建带有Location头部的201 Created响应
+        return Response.status(Response.Status.CREATED)
+                .header("Location", "http://localhost:8083/addresses/" + address.getAddressId()) // 假设地址可以通过ID访问
+                .entity(address) // 返回创建的地址对象
+                .build();
+    }
+@GET
+@Path("/{id}")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
+    public Response getAddressById(@PathParam("id") Integer id){
+        Link self = Link.fromUriBuilder(uriInfo.getAbsolutePathBuilder()).rel("self").type("GET").build();
+return Response.ok().entity(addressService.getAddressDataById(id)).links(self).build();
+}
+
 
 
 }

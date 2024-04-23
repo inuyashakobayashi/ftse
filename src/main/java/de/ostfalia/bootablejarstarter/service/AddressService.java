@@ -1,6 +1,8 @@
 package de.ostfalia.bootablejarstarter.service;
 
 import de.ostfalia.bootablejarstarter.entity.Address;
+import de.ostfalia.bootablejarstarter.entity.City;
+import de.ostfalia.bootablejarstarter.entity.Country;
 import jakarta.annotation.Resource;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
@@ -22,7 +24,21 @@ public class AddressService {
     public void save(Address address){
         em.persist(address);
     }
+    //TODO es fehlt noch die post api ich mache zuerst andere APi und danach mach ich den das
+public void saveAddressDAO(List<Map<Object,String>> addressData){
+    for (Map<Object, String> data : addressData) {
+        Address address = new Address();
+        address.setAddress(data.get("address"));
+        address.setAddress2(data.get("address2"));
+        // 如果您只想存储部分数据，可以按需获取
+        //address.setCity(data.get("city"));
+        //address.setCountry(data.get("country"));
+        // 如果您有其他需要存储的字段，也可以在这里设置
 
+        // 使用JPA的EntityManager将实体保存到数据库
+        em.persist(address);
+    }
+}
     public void update(Address address){
         em.merge(address);
     }
@@ -30,7 +46,29 @@ public class AddressService {
     public Address findeAddressById(Integer id){
         return em.find(Address.class,id);
     }
+public City findCityById(Integer id){
+        return em.find(City.class,id);
+}
+public Country findCountryById(Integer id){
+        return em.find(Country.class,id);
+}
+public List<Map<String,Object>> getAddressDataById(Integer id) {
+    Address address = em.find(Address.class, id);
+    List<Map<String, Object>> addressData = new ArrayList<>();
 
+        Map<String, Object> addressMap = new HashMap<>();
+        addressMap.put("address", address.getAddress());
+        addressMap.put("city", address.getCity().getCity());
+        addressMap.put("country", address.getCity().getCountry().getCountry());
+        addressMap.put("district", address.getDistrict());
+        addressMap.put("id", address.getAddressId());
+        addressMap.put("phone", address.getPhone());
+        addressMap.put("postalCode", address.getPostalCode());
+
+        addressMap.put("address2", address.getAddress2());
+        addressData.add(addressMap);
+    return addressData;
+}
     public void delete(Address address){
         em.remove(address);
     }
@@ -42,7 +80,7 @@ public class AddressService {
 
         TypedQuery<Address> query = em.createQuery("SELECT a from Address a", Address.class);
         query.setFirstResult((page-1)*PAGE_SIZE);
-        query.setMaxResults(PAGE_SIZE);
+        query.setMaxResults(PAGE_SIZE);//hier verstehe ich nicht max soll 100
 //    return query.getResultList();
         List<Address> results = query.getResultList();
         List<Map<String, Object>> simplifiedAddresses = new ArrayList<>();
@@ -55,6 +93,8 @@ public class AddressService {
             addressMap.put("id", address.getAddressId());
             addressMap.put("phone", address.getPhone());
             addressMap.put("postalCode", address.getPostalCode());
+
+            addressMap.put("address2", address.getAddress2());
             simplifiedAddresses.add(addressMap);
 
 
